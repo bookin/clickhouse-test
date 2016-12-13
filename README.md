@@ -59,6 +59,8 @@ clickhouse-client -q "SELECT * FROM user_visit_ip_num FORMAT TabSeparated" > dum
 
 ## Results
 
+[![Chart result](https://habrastorage.org/files/e43/5e8/616/e435e86161044818bf407cd8822c4520.jpg)](https://live.amcharts.com/E0YmF/)
+
 #### Run time
 
 Query| int user id | string user ip | num user ip
