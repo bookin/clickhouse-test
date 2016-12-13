@@ -46,6 +46,7 @@ clickhouse-client -q "SELECT * FROM user_visit_ip_num FORMAT TabSeparated" > dum
 **RAM:**768 MB
 **SWAP:**1 GB
 **Storage:**15 GB SSD
+**OS:**Ubuntu 16.04 (Xenial Xerus)
 
 ## Results
 
