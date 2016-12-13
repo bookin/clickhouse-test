@@ -46,7 +46,7 @@ clickhouse-client -q "SELECT * FROM user_visit_ip_num FORMAT TabSeparated" > dum
 #### Run time
 
 Query| int user id | string user ip | num user ip
-| | |
+--- | --- | --- | ---
 **select(distinct())** between all | 1.214 | 3.840 | 4.351
 **select(distinct())** between AND where | 0.329 | 0.804 | 0.583
 **select(distinct())** one date | 0.039 | 0.050 | 0.031
