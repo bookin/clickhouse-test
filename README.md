@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS user_visit (
 	user_id Int32,
 	site_id Int32
 ) 
-ENGINE = SummingMergeTree(event_date, (event_time, user_id, site_id), 8192)
+ENGINE = MergeTree(event_date, (event_time, user_id, site_id), 8192)
 
 CREATE TABLE IF NOT EXISTS user_visit_ip_str (
 	event_date Date DEFAULT toDate(event_time),
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS user_visit_ip_str (
 	user_ip String,
 	site_id Int32
 ) 
-ENGINE = SummingMergeTree(event_date, (event_time, user_ip, site_id), 8192)
+ENGINE = MergeTree(event_date, (event_time, user_ip, site_id), 8192)
 
 
 CREATE TABLE IF NOT EXISTS user_visit_ip_num (
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS user_visit_ip_num (
 	user_ip UInt32,
 	site_id Int32
 ) 
-ENGINE = SummingMergeTree(event_date, (event_time, user_ip, site_id), 8192)
+ENGINE = MergeTree(event_date, (event_time, user_ip, site_id), 8192)
 ```
 ### Load dumps
 ```bash
