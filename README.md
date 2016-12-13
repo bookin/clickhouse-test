@@ -64,8 +64,16 @@ clickhouse-client -q "SELECT * FROM user_visit_ip_num FORMAT TabSeparated" > dum
 Query| int user id | string user ip | num user ip
 --- | --- | --- | ---
 **select(distinct())** between all | 1.214 | 3.840 | 4.351
+**select(group by)** between all | 0.323 | 10.353 | 0.792
+**uniqExact()** between all | 0.269 | 0.936 | 0.423
+| | |
 **select(distinct())** between AND where | 0.329 | 0.804 | 0.583
+**select(group by)** between AND where | 0.140 | 0.435 | 0.171
+**uniqExact()** between AND where | 0.103 | 0.343 | 0.123
+| | |
 **select(distinct())** one date | 0.039 | 0.050 | 0.031
+**select(group by)** one date | 0.019 | 0.043 | 0.015
+**uniqExact()** one date | 0.010 | 0.017 | 0.010
 | | |
 **uniq()** between all | 0.100 | 0.582 | 0.118
 **uniq()** between AND where | 0.126 | 0.329 | 0.105
@@ -84,11 +92,35 @@ Query| int user id | string user ip | num user ip
 SELECT count() FROM (SELECT distinct(user_id) FROM user_visit WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12'));
 -- 997533 rows - Elapsed: 1.214 sec. Processed 6.00 million rows, 36.00 MB (4.94 million rows/s., 29.65 MB/s.)
 
+SELECT count() FROM (SELECT user_id FROM user_visit WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') GROUP BY user_id);
+-- 997533 rows - Elapsed: 0.323 sec. Processed 6.00 million rows, 36.00 MB (18.60 million rows/s., 111.59 MB/s.)
+
+SELECT uniqExact(user_id) FROM user_visit WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12');
+-- 997533 rows - Elapsed: 0.269 sec. Processed 6.00 million rows, 36.00 MB (22.28 million rows/s., 133.69 MB/s.)
+
+
+
+
 SELECT count() FROM (SELECT distinct(user_id) FROM user_visit WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') AND site_id=4);
 -- 451824 rows - Elapsed: 0.329 sec. Processed 6.00 million rows, 60.00 MB (18.22 million rows/s., 182.15 MB/s.)
 
+SELECT count() FROM (SELECT user_id FROM user_visit WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') AND site_id=4 GROUP BY user_id);
+-- 451824 rows - Elapsed: 0.140 sec. Processed 6.00 million rows, 60.00 MB (42.74 million rows/s., 427.37 MB/s.)
+
+SELECT uniqExact(user_id) FROM user_visit WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') AND site_id=4;
+-- 451824 rows - Elapsed: 0.103 sec. Processed 6.00 million rows, 60.00 MB (58.44 million rows/s., 584.44 MB/s.)
+
+
+
+
 SELECT count() FROM (SELECT distinct(user_id) FROM user_visit WHERE event_date = toDate('2016-11-10'));
 -- 93427 rows - Elapsed: 0.039 sec. Processed 2.95 million rows, 6.36 MB (75.33 million rows/s., 162.37 MB/s.)
+
+SELECT count() FROM (SELECT user_id FROM user_visit WHERE event_date = toDate('2016-11-10')  GROUP BY user_id);
+-- 93427 rows - Elapsed: 0.019 sec. Processed 2.72 million rows, 5.91 MB (142.79 million rows/s., 309.63 MB/s.)
+
+SELECT uniqExact(user_id) FROM user_visit WHERE event_date = toDate('2016-11-10');
+-- 93427 rows - Elapsed: 0.010 sec. Processed 2.72 million rows, 5.91 MB (275.24 million rows/s., 596.83 MB/s.)
 
 
 
@@ -115,6 +147,8 @@ SELECT uniqCombined(user_id) FROM user_visit WHERE event_date = toDate('2016-11-
 -- 93544 rows - Elapsed: 0.011 sec. Processed 2.95 million rows, 6.36 MB (279.21 million rows/s., 601.81 MB/s.)
 
 
+
+
 SELECT toHour(event_time) as h, toMinute(event_time) as m, count() FROM user_visit WHERE event_date = toDate('2016-10-13') group by h,m ORDER BY h,m;
 -- Elapsed: 0.019 sec. Processed 2.95 million rows, 6.36 MB (153.72 million rows/s., 331.34 MB/s.)
 
@@ -127,11 +161,36 @@ SELECT toDayOfMonth(event_time) as d, count() FROM user_visit WHERE event_date b
 SELECT count() FROM (SELECT distinct(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12'));
 -- 5995771 rows - Elapsed: 3.840 sec. Processed 6.00 million rows, 145.65 MB (1.56 million rows/s., 37.93 MB/s.)
 
+SELECT count() FROM (SELECT IPv4StringToNum(user_ip) FROM user_visit_ip_str WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') GROUP BY user_ip);
+-- 5995771 rows - Elapsed: 10.353 sec. Processed 6.00 million rows, 145.65 MB (579.39 thousand rows/s., 14.06 MB/s.)
+
+SELECT uniqExact(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12');
+-- 5995771 rows - Elapsed: 0.936 sec. Processed 6.00 million rows, 145.65 MB (6.41 million rows/s., 155.54 MB/s.)
+
+
+
+
 SELECT count() FROM (SELECT distinct(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') AND site_id=4);
 -- 600554 rows - Elapsed: 0.804 sec. Processed 6.00 million rows, 169.65 MB (7.47 million rows/s., 211.09 MB/s.)
 
+SELECT count() FROM (SELECT IPv4StringToNum(user_ip) FROM user_visit_ip_str WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') AND site_id=4  GROUP BY user_ip);
+-- 600554 rows - Elapsed: 0.435 sec. Processed 6.00 million rows, 169.65 MB (13.78 million rows/s., 389.62 MB/s.)
+
+SELECT uniqExact(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') AND site_id=4;
+-- 600554 rows - Elapsed: 0.343 sec. Processed 6.00 million rows, 169.65 MB (17.49 million rows/s., 494.49 MB/s.)
+
+
+
+
 SELECT count() FROM (SELECT distinct(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event_date = toDate('2016-11-10'));
 -- 98380 rows - Elapsed: 0.050 sec. Processed 2.95 million rows, 8.83 MB (58.93 million rows/s., 176.37 MB/s.)
+
+SELECT count() FROM (SELECT IPv4StringToNum(user_ip) FROM user_visit_ip_str WHERE event_date = toDate('2016-11-10') GROUP BY user_ip);
+-- 98380 rows - Elapsed: 0.043 sec. Processed 2.95 million rows, 8.28 MB (68.89 million rows/s., 193.15 MB/s.)
+
+SELECT uniqExact(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event_date = toDate('2016-11-10');
+-- 98380 rows - Elapsed: 0.017 sec. Processed 2.95 million rows, 8.28 MB (171.93 million rows/s., 482.03 MB/s.)
+
 
 
 
@@ -146,6 +205,7 @@ SELECT uniq(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event_date = 
 
 
 
+
 SELECT uniqCombined(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12');
 -- 6003838 rows - Elapsed: 0.621 sec. Processed 6.00 million rows, 145.65 MB (9.66 million rows/s., 234.61 MB/s.)
 
@@ -154,6 +214,8 @@ SELECT uniqCombined(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event
 
 SELECT uniqCombined(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event_date = toDate('2016-11-10');
 -- 98196 rows - Elapsed: 0.020 sec. Processed 2.95 million rows, 8.83 MB (147.86 million rows/s., 442.52 MB/s.)
+
+
 
 
 SELECT toHour(event_time) as h, toMinute(event_time) as m, count() FROM user_visit_ip_str WHERE event_date = toDate('2016-10-13') group by h,m ORDER BY h,m;
@@ -168,11 +230,36 @@ SELECT toDayOfMonth(event_time) as d, count() FROM user_visit_ip_str WHERE event
 SELECT count() FROM (SELECT distinct(user_ip) FROM user_visit_ip_num WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12'));
 -- 5995848 rows - Elapsed: 4.351 sec. Processed 6.00 million rows, 36.00 MB (1.38 million rows/s., 8.27 MB/s.)
 
+SELECT count() FROM (SELECT user_ip FROM user_visit_ip_num WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') GROUP BY user_ip);
+-- 5995848 rows - Elapsed: 0.792 sec. Processed 6.00 million rows, 36.00 MB (7.57 million rows/s., 45.44 MB/s.)
+
+SELECT uniqExact(user_ip) FROM user_visit_ip_num WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12');
+-- 5995848 rows - Elapsed: 0.423 sec. Processed 6.00 million rows, 36.00 MB (14.18 million rows/s., 85.08 MB/s.)
+
+
+
+
 SELECT count() FROM (SELECT distinct(user_ip) FROM user_visit_ip_num WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') AND site_id=4);
 -- 600601 rows - Elapsed: 0.583 sec. Processed 6.00 million rows, 60.00 MB (10.29 million rows/s., 102.88 MB/s.)
 
+SELECT count() FROM (SELECT user_ip FROM user_visit_ip_num WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') AND site_id=4 GROUP BY user_ip);
+-- 600601 rows - Elapsed: 0.171 sec. Processed 6.00 million rows, 60.00 MB (35.13 million rows/s., 351.31 MB/s.)
+
+SELECT uniqExact(user_ip) FROM user_visit_ip_num WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12') AND site_id=4;
+-- 600601 rows - Elapsed: 0.123 sec. Processed 6.00 million rows, 60.00 MB (48.83 million rows/s., 488.28 MB/s.)
+
+
+
+
 SELECT count() FROM (SELECT distinct(user_ip) FROM user_visit_ip_num WHERE event_date = toDate('2016-11-10'));
 -- 98917 rows - Elapsed: 0.031 sec. Processed 2.95 million rows, 6.43 MB (94.43 million rows/s., 205.90 MB/s.)
+
+SELECT count() FROM (SELECT user_ip FROM user_visit_ip_num WHERE event_date = toDate('2016-11-10') GROUP BY user_ip);
+-- 98917 rows - Elapsed: 0.015 sec. Processed 2.72 million rows, 5.94 MB (184.69 million rows/s., 402.72 MB/s.)
+
+SELECT uniqExact(user_ip) FROM user_visit_ip_num WHERE event_date = toDate('2016-11-10');
+-- 98917 rows - Elapsed: 0.010 sec. Processed 2.72 million rows, 5.94 MB (280.45 million rows/s., 611.54 MB/s.)
+
 
 
 
@@ -187,6 +274,7 @@ SELECT uniq(user_ip) FROM user_visit_ip_num WHERE event_date = toDate('2016-11-1
 
 
 
+
 SELECT uniqCombined(user_ip) FROM user_visit_ip_num WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12');
 -- 5995942 rows - Elapsed: 0.202 sec. Processed 6.00 million rows, 36.00 MB (29.70 million rows/s., 178.23 MB/s.)
 
@@ -195,6 +283,8 @@ SELECT uniqCombined(user_ip) FROM user_visit_ip_num WHERE event_date between toD
 
 SELECT uniqCombined(user_ip) FROM user_visit_ip_num WHERE event_date = toDate('2016-11-10');
 -- 98728 rows - Elapsed: 0.012 sec. Processed 2.95 million rows, 6.43 MB (252.62 million rows/s., 550.81 MB/s.)
+
+
 
 
 SELECT toHour(event_time) as h, toMinute(event_time) as m, count() FROM user_visit_ip_num WHERE event_date = toDate('2016-10-13') group by h,m ORDER BY h,m;
