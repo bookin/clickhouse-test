@@ -67,6 +67,7 @@ Query| int user id | string user ip | num user ip
 **uniqCombined()** one date | 0.011 | 0.020 | 0.012
 | | |
 **group by** date and time | 0.019 | 0.037 | 0.027
+**group by** days | 0.062 | 0.060 | 0.062
 
 
 #### user_visit
@@ -108,6 +109,8 @@ SELECT uniqCombined(user_id) FROM user_visit WHERE event_date = toDate('2016-11-
 SELECT toHour(event_time) as h, toMinute(event_time) as m, count() FROM user_visit WHERE event_date = toDate('2016-10-13') group by h,m ORDER BY h,m
 #Elapsed: 0.019 sec. Processed 2.95 million rows, 6.36 MB (153.72 million rows/s., 331.34 MB/s.)
 
+SELECT toDayOfMonth(event_time) as d, count() FROM user_visit WHERE event_date between toDate('2016-11-01') AND toDate('2016-11-30') group by d ORDER BY d
+#30 rows - Elapsed: 0.062 sec. Processed 2.95 million rows, 17.71 MB (47.47 million rows/s., 284.83 MB/s.)
 ```
 
 #### user_visit_ip_str
@@ -146,6 +149,9 @@ SELECT uniqCombined(IPv4StringToNum(user_ip)) FROM user_visit_ip_str WHERE event
 
 SELECT toHour(event_time) as h, toMinute(event_time) as m, count() FROM user_visit_ip_str WHERE event_date = toDate('2016-10-13') group by h,m ORDER BY h,m
 #Elapsed: 0.037 sec. Processed 1.87 million rows, 4.23 MB (50.73 million rows/s., 114.81 MB/s.)
+
+SELECT toDayOfMonth(event_time) as d, count() FROM user_visit_ip_str WHERE event_date between toDate('2016-11-01') AND toDate('2016-11-30') group by d ORDER BY d
+#30 rows - Elapsed: 0.060 sec. Processed 2.95 million rows, 17.71 MB (48.97 million rows/s., 293.85 MB/s.)
 ```
 
 #### user_visit_ip_num
@@ -184,5 +190,8 @@ SELECT uniqCombined(user_ip) FROM user_visit_ip_num WHERE event_date = toDate('2
 
 SELECT toHour(event_time) as h, toMinute(event_time) as m, count() FROM user_visit_ip_num WHERE event_date = toDate('2016-10-13') group by h,m ORDER BY h,m
 #Elapsed: 0.027 sec. Processed 1.87 million rows, 4.20 MB (68.27 million rows/s., 153.31 MB/s.)
+
+SELECT toDayOfMonth(event_time) as d, count() FROM user_visit_ip_num WHERE event_date between toDate('2016-11-01') AND toDate('2016-11-30') group by d ORDER BY d
+#30 rows - Elapsed: 0.062 sec. Processed 2.95 million rows, 17.70 MB (47.72 million rows/s., 286.34 MB/s.)
 ```
 
