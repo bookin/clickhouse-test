@@ -2,7 +2,7 @@
 
 ### Clone
 
-Make sure that you have Git LFS installed.
+Make sure that you have [Git LFS](https://git-lfs.github.com/) installed.
 
 ```
 git lfs clone https://github.com/bookin/clickhouse-test.git
