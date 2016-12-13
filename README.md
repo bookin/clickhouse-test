@@ -43,6 +43,25 @@ clickhouse-client -q "SELECT * FROM user_visit_ip_num FORMAT TabSeparated" > dum
 
 ## Results
 
+##Run time
+
+Query| int user id | string user ip | num user ip
+--- | --- | --- | ---
+**select(distinct())** between all | 1.214 | 3.840 | 4.351
+**select(distinct())** between AND where | 0.329 | 0.804 | 0.583
+**select(distinct())** one date | 0.039 | 0.050 | 0.031
+--- | --- | --- | ---
+**uniq()** between all | 0.100 | 0.582 | 0.118
+**uniq()** between AND where | 0.126 | 0.329 | 0.105
+**uniq()** one date | 0.013 | 0.024 | 0.015
+--- | --- | --- | ---
+**uniqCombined()** between all | 0.186 | 0.621 | 0.202
+**uniqCombined()** between AND where | 0.104 | 0.296 | 0.102
+**uniqCombined()** one date | 0.011 | 0.020 | 0.012
+--- | --- | --- | ---
+**group by** date and time | 0.019 | 0.037 | 0.027
+
+
 #### user_visit
 ```sql
 SELECT count() FROM (SELECT distinct(user_id) FROM user_visit WHERE event_date between toDate('2016-10-13') AND toDate('2016-12-12'))
