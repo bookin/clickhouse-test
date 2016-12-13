@@ -41,6 +41,12 @@ clickhouse-client -q "SELECT * FROM user_visit_ip_str FORMAT TabSeparated" > dum
 clickhouse-client -q "SELECT * FROM user_visit_ip_num FORMAT TabSeparated" > dump_user_visit_ip_num.tabs
 ```
 
+#### SERVER INFO
+**CPU:**1 vCore
+**RAM:**768 MB
+**SWAP:**1 GB
+**Storage:**15 GB SSD
+
 ## Results
 
 #### Run time
